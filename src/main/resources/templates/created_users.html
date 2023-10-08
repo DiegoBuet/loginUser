@@ -44,8 +44,13 @@
                     <br>
                     <div class="form-group">
                         <label>Número de teléfono:</label>
-                        <input type="text" name="phoneNumber" th:field="*{phoneNumber}" class="form-control" placeholder="+503 #### ####">
-                        <span th:if="${invalidPhoneNumberError}" class="error"> los valores válidos deben respetar el siguiente patrón +503 #### ####</span>
+                        <div class="input-group">
+                            <div class="input-group-prepend">
+                                <span class="input-group-text">+503 </span>
+                            </div>
+                            <input type="text" name="phoneNumber" th:field="*{phoneNumber}" class="form-control" placeholder="#### ####">
+                        </div>
+                        <span th:if="${invalidPhoneNumberError}" class="error">Los valores válidos deben respetar el siguiente patrón +503 #### #### y solo valores numéricos</span>
                     </div>
                     <br>
                     <br>

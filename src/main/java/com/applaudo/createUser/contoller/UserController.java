@@ -45,8 +45,9 @@
                 model.addAttribute("invalidPhoneNumberError", true);
                 return "created_users"; // Regresar a la vista de creación con un mensaje de error
             }
+
             // Transformar el número de teléfono antes de guardarlo
-            String formattedPhoneNumber = "+503 " + user.getPhoneNumber();
+            String formattedPhoneNumber = formatPhoneNumber(user.getPhoneNumber());
             user.setPhoneNumber(formattedPhoneNumber);
             // Si el correo electrónico no está registrado, guarda el usuario en la base de datos
             userService.saveUser(user);
@@ -56,14 +57,16 @@
 
 
         @PostMapping("/list_users/{id}")
-        public String updateUser(@PathVariable Long id,@RequestParam("password") String password, @ModelAttribute("user") User user, Model model) {
+        public String updateUser(@PathVariable Long id, @RequestParam("password") String password, @ModelAttribute("user") User user, Model model) {
             User currentUser = userService.findUserById(id);
             String currentEmail = currentUser.getEmail();
+
             // Verificar si la contraseña proporcionada coincide con la contraseña almacenada
             if (!password.equals(currentUser.getPassword())) {
                 model.addAttribute("passwordError", true);
                 return "edit_users"; // Redirigir a la página de edición con un mensaje de error
             }
+
             // Validar el número de teléfono
             if (!isValidPhoneNumber(user.getPhoneNumber())) {
                 model.addAttribute("invalidPhoneNumberError", true);
@@ -71,15 +74,20 @@
             }
 
             // Transformar el número de teléfono antes de actualizarlo en la base de datos
-            String formattedPhoneNumber = "+503 " + user.getPhoneNumber();
+            String formattedPhoneNumber = formatPhoneNumber(user.getPhoneNumber());
+
             currentUser.setFirsName(user.getFirsName());
             currentUser.setLastName(user.getLastName());
             currentUser.setEmail(currentEmail);
+
             currentUser.setPhoneNumber(formattedPhoneNumber);
             currentUser.setPassword(user.getPassword());
             userService.updateUser(currentUser);
+
             return "redirect:/list_users";
         }
+
+
         @GetMapping({"/list_users/{id}"})
         public String deleteUser(@PathVariable Long id){
             userService.deleteUser(id);
@@ -88,6 +96,10 @@
 
         @GetMapping({"/list_users/edit/{id}"})
         public String showEditForm(@PathVariable Long id, Model model){
+            User user = userService.findUserById(id);
+            // Eliminar el prefijo "+503" del número de teléfono para mostrarlo en el formulario de edición
+            String phoneNumberWithoutPrefix = extractLast8Digits(user.getPhoneNumber());
+            user.setPhoneNumber(phoneNumberWithoutPrefix);
             model.addAttribute("user", userService.findUserById(id));
             return "edit_users";
         }
@@ -122,6 +134,22 @@
         public String handleInvalidEmailFormat(Model model) {
             model.addAttribute("emailError", true);
             return "create_users"; // Redirigir de vuelta al formulario de creación con un mensaje de error
+        }
+
+        private String formatPhoneNumber(String phoneNumber) {
+            if (phoneNumber != null && !phoneNumber.isEmpty()) {
+                return "+503 " + phoneNumber;
+            }
+            return "";
+        }
+        private String extractLast8Digits(String phoneNumber) {
+            // Eliminar caracteres no numéricos y mantener los últimos 8 dígitos
+            String numericPhoneNumber = phoneNumber.replaceAll("[^0-9]", "");
+            if (numericPhoneNumber.length() >= 8) {
+                return numericPhoneNumber.substring(numericPhoneNumber.length() - 8);
+            } else {
+                return numericPhoneNumber;
+            }
         }
 
 
