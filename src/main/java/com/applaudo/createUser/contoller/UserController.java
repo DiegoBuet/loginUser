@@ -33,22 +33,29 @@
             // Verificar si el correo electrónico ya está registrado
             User existingUser = userService.findUserByEmail(user.getEmail());
             if (existingUser != null) {
-               model.addAttribute("emailError", true);
+                model.addAttribute("emailError", true);
                 return "created_users"; // Vuelve al formulario de creación con un mensaje de error
             }
             if (!isValidEmail(user.getEmail())) {
                 model.addAttribute("invalidEmailError", true);
                 return "created_users"; // Regresar a la vista de creación con un mensaje de error
             }
-            // Validar el número de teléfono
-            if (!isValidPhoneNumber(user.getPhoneNumber())) {
-                model.addAttribute("invalidPhoneNumberError", true);
-                return "created_users"; // Regresar a la vista de creación con un mensaje de error
+
+            // Verificar si el número de teléfono está vacío
+            if (user.getPhoneNumber() != null && !user.getPhoneNumber().isEmpty()) {
+                // Validar el número de teléfono
+                if (!isValidPhoneNumber(user.getPhoneNumber())) {
+                    model.addAttribute("invalidPhoneNumberError", true);
+                    return "created_users"; // Regresar a la vista de creación con un mensaje de error
+                }
+                // Transformar el número de teléfono antes de guardarlo
+                String formattedPhoneNumber = formatPhoneNumber(user.getPhoneNumber());
+                user.setPhoneNumber(formattedPhoneNumber);
+            } else {
+                // El número de teléfono está vacío, no aplicamos el formato
+                user.setPhoneNumber("");
             }
 
-            // Transformar el número de teléfono antes de guardarlo
-            String formattedPhoneNumber = formatPhoneNumber(user.getPhoneNumber());
-            user.setPhoneNumber(formattedPhoneNumber);
             // Si el correo electrónico no está registrado, guarda el usuario en la base de datos
             userService.saveUser(user);
             return "redirect:/list_users";
@@ -57,7 +64,12 @@
 
 
         @PostMapping("/list_users/{id}")
-        public String updateUser(@PathVariable Long id, @RequestParam("password") String password, @ModelAttribute("user") User user, Model model) {
+        public String updateUser(
+                @PathVariable Long id,
+                @RequestParam("password") String password,
+                @ModelAttribute("user") User user,
+                Model model
+        ) {
             User currentUser = userService.findUserById(id);
             String currentEmail = currentUser.getEmail();
 
@@ -67,25 +79,31 @@
                 return "edit_users"; // Redirigir a la página de edición con un mensaje de error
             }
 
-            // Validar el número de teléfono
-            if (!isValidPhoneNumber(user.getPhoneNumber())) {
-                model.addAttribute("invalidPhoneNumberError", true);
-                return "edit_users"; // Redirigir a la página de edición con un mensaje de error
+            // Verificar si el número de teléfono está vacío
+            if (user.getPhoneNumber() != null && !user.getPhoneNumber().isEmpty()) {
+                // Validar el número de teléfono
+                if (!isValidPhoneNumber(user.getPhoneNumber())) {
+                    model.addAttribute("invalidPhoneNumberError", true);
+                    return "edit_users"; // Redirigir a la página de edición con un mensaje de error
+                }
+                // Transformar el número de teléfono antes de actualizarlo en la base de datos
+                String formattedPhoneNumber = formatPhoneNumber(user.getPhoneNumber());
+                currentUser.setPhoneNumber(formattedPhoneNumber);
+            } else {
+                // El número de teléfono está vacío, no aplicamos el formato
+                currentUser.setPhoneNumber("");
             }
-
-            // Transformar el número de teléfono antes de actualizarlo en la base de datos
-            String formattedPhoneNumber = formatPhoneNumber(user.getPhoneNumber());
 
             currentUser.setFirsName(user.getFirsName());
             currentUser.setLastName(user.getLastName());
             currentUser.setEmail(currentEmail);
-
-            currentUser.setPhoneNumber(formattedPhoneNumber);
             currentUser.setPassword(user.getPassword());
+
             userService.updateUser(currentUser);
 
             return "redirect:/list_users";
         }
+
 
 
         @GetMapping({"/list_users/{id}"})
@@ -152,5 +170,10 @@
             }
         }
 
+        // Método para validar la contraseña
+        private boolean isValidPassword(String password) {
+            // La contraseña debe tener al menos una letra y un número, con una longitud mínima de 4 caracteres
+            return password != null && password.matches("^(?=.*[A-Za-z])(?=.*\\d).{4,}$");
+        }
 
     }
