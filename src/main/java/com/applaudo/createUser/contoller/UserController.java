@@ -40,6 +40,14 @@
                 model.addAttribute("invalidEmailError", true);
                 return "created_users"; // Regresar a la vista de creación con un mensaje de error
             }
+            // Validar el número de teléfono
+            if (!isValidPhoneNumber(user.getPhoneNumber())) {
+                model.addAttribute("invalidPhoneNumberError", true);
+                return "created_users"; // Regresar a la vista de creación con un mensaje de error
+            }
+            // Transformar el número de teléfono antes de guardarlo
+            String formattedPhoneNumber = "+503 " + user.getPhoneNumber();
+            user.setPhoneNumber(formattedPhoneNumber);
             // Si el correo electrónico no está registrado, guarda el usuario en la base de datos
             userService.saveUser(user);
             return "redirect:/list_users";
@@ -56,13 +64,20 @@
                 model.addAttribute("passwordError", true);
                 return "edit_users"; // Redirigir a la página de edición con un mensaje de error
             }
+            // Validar el número de teléfono
+            if (!isValidPhoneNumber(user.getPhoneNumber())) {
+                model.addAttribute("invalidPhoneNumberError", true);
+                return "edit_users"; // Redirigir a la página de edición con un mensaje de error
+            }
+
+            // Transformar el número de teléfono antes de actualizarlo en la base de datos
+            String formattedPhoneNumber = "+503 " + user.getPhoneNumber();
             currentUser.setFirsName(user.getFirsName());
             currentUser.setLastName(user.getLastName());
             currentUser.setEmail(currentEmail);
-            currentUser.setPhoneNumber(user.getPhoneNumber());
+            currentUser.setPhoneNumber(formattedPhoneNumber);
             currentUser.setPassword(user.getPassword());
             userService.updateUser(currentUser);
-
             return "redirect:/list_users";
         }
         @GetMapping({"/list_users/{id}"})
@@ -94,7 +109,14 @@
             Matcher matcher = pattern.matcher(email);
             return matcher.matches();
         }
-        // Método para manejar errores de formato de correo electrónico
+        // Método para validar el formato del número de teléfono en el lado del servidor
+        private boolean isValidPhoneNumber(String phoneNumber) {
+            // Expresión regular para validar el número de teléfono (8 dígitos)
+            String phoneRegex = "\\d{8}";
+            Pattern pattern = Pattern.compile(phoneRegex);
+            Matcher matcher = pattern.matcher(phoneNumber);
+            return matcher.matches();
+        }
 
         @ExceptionHandler(InvalidEmailFormatException.class)
         public String handleInvalidEmailFormat(Model model) {

@@ -43,8 +43,9 @@
                     <br>
                     <br>
                     <div class="form-group">
-                        <label>Número de teléfono :</label>
-                        <input type="text" name="phoneNumber" th:field="*{phoneNumber}" class="form-control" placeholder="Cantidad del producto: " required>
+                        <label>Número de teléfono:</label>
+                        <input type="text" name="phoneNumber" th:field="*{phoneNumber}" class="form-control" placeholder="+503 #### ####">
+                        <span th:if="${invalidPhoneNumberError}" class="error"> los valores válidos deben respetar el siguiente patrón +503 #### ####</span>
                     </div>
                     <br>
                     <br>
