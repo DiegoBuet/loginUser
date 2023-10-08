@@ -20,9 +20,9 @@
 <div class="container">
     <div class="row">
         <div class="col-lg-6 col-md-6 col-sm-6 container justify-content-center card">
-            <h2 class="text-center">Agregar Usuario</h2>
+            <h2 class="text-center">Editar Usuario</h2>
             <div class="card-body">
-                <form th:action="@{/list_users}" th:object="${user}" method="POST">
+                <form th:action="@{/list_users/{id}(id=${user.id})}" th:object="${user}" method="POST">
                     <div class="form-group">
                         <label>nombre:</label>
                         <input type="text" name="firsName" th:field="*{firsName}" class="form-control" placeholder="Nombre del producto: " required>
@@ -34,25 +34,28 @@
                     </div>
                     <br>
                     <div class="form-group">
-                        <label>email :</label>
-                        <input type="text" name="email" th:field="*{email}" class="form-control" placeholder="Cantidad del producto: " required>
+                        <label for="email">Correo electrónico:</label>
+                        <input type="email" class="form-control" id="email" name="email" th:field="*{email}" required>
+                        <span th:if="${#fields.hasErrors('email')}" th:errors="*{email}" class="error"></span>
                     </div>
                     <br>
                     <br>
                     <div class="form-group">
-                        <label>Cantidad :</label>
+                        <label>Número de teléfono :</label>
                         <input type="text" name="phoneNumber" th:field="*{phoneNumber}" class="form-control" placeholder="Cantidad del producto: " required>
                     </div>
                     <br>
+                    <br>
                     <div class="form-group">
-                        <label>Código de producto:</label>
-                        <input type="text" name="password" th:field="*{password}" class="form-control" placeholder="Ingrese Código de producto fuera de los rangos entre 239-384" >
+                        <label>Contraseña:</label>
+                        <input type="password" name="password" th:field="*{password}" class="form-control" placeholder="******" >
                         <span class="error-message">Product code is not allowed.</span>
                     </div>
                     <div id="result" class="text-right"></div>
                     <br>
                     <div class="box-footer">
-                        <button class="btn btn-success">Guardar</button>
+                        <button type="submit" class="btn btn-primary" th:disabled="${emailExistsError}">Guardar</button>
+
                     </div>
                 </form>
             </div>

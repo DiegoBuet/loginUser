@@ -37,7 +37,7 @@
 
 
         @PostMapping("/list_users/{id}")
-        public String updateUser(@PathVariable Long id, @ModelAttribute("user") User user) {
+        public String updateUser(@PathVariable Long id, @ModelAttribute("user") User user, Model model) {
             User currentUser = userService.findUserById(id);
             currentUser.setFirsName(user.getFirsName());
             currentUser.setLastName(user.getLastName());
@@ -54,11 +54,13 @@
             return "redirect:/list_users"; // Redirects to the purchase list page
         }
 
-        @GetMapping({"/list_purchase/edit/{id}"})
+        @GetMapping({"/list_users/edit/{id}"})
         public String showEditForm(@PathVariable Long id, Model model){
             model.addAttribute("user", userService.findUserById(id));
             return "edit_users";
         }
+
+
         @GetMapping({"/list_users","/"})
         public String listUsers(Model model){
             List<User> userList = userService.listUsers();
