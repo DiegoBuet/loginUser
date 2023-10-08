@@ -37,6 +37,7 @@
                         <label for="email">Correo electrónico:</label>
                         <input type="email" class="form-control" id="email" name="email" th:field="*{email}" required>
                         <span th:if="${#fields.hasErrors('email')}" th:errors="*{email}" class="error"></span>
+                        <span th:if="${emailError}" class="error">El correo electrónico ya está registrado.</span>
                     </div>
                     <br>
                     <br>
@@ -49,7 +50,7 @@
                     <div class="form-group">
                         <label>Contraseña:</label>
                         <input type="password" name="password" th:field="*{password}" class="form-control" placeholder="******" >
-                        <span class="error-message">Product code is not allowed.</span>
+
                     </div>
                     <div id="result" class="text-right"></div>
                     <br>

@@ -30,10 +30,18 @@
 
         @PostMapping("/list_users")
         public String saveUser(@ModelAttribute("user") User user, Model model) {
-            // Continuar guardando el usuario en la base de datos
+            // Verificar si el correo electrónico ya está registrado
+            User existingUser = userService.findUserByEmail(user.getEmail());
+            if (existingUser != null) {
+               model.addAttribute("emailError", true);
+                return "created_users"; // Vuelve al formulario de creación con un mensaje de error
+            }
+
+            // Si el correo electrónico no está registrado, guarda el usuario en la base de datos
             userService.saveUser(user);
             return "redirect:/list_users";
         }
+
 
 
         @PostMapping("/list_users/{id}")

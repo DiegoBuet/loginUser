@@ -5,6 +5,7 @@ import com.applaudo.createUser.model.entity.User;
 import java.util.List;
 
 public interface UserService {
+
     List<User> listUsers();
     User saveUser(User purchase);
     User findUserById(Long id);
