@@ -41,6 +41,13 @@
                 return "created_users"; // Regresar a la vista de creación con un mensaje de error
             }
 
+            // Validar la contraseña
+            String password = user.getPassword();
+            if (!isValidPassword(password)) {
+                model.addAttribute("invalidPasswordError", true);
+                return "created_users"; // Regresar a la vista de creación con un mensaje de error
+            }
+
             // Verificar si el número de teléfono está vacío
             if (user.getPhoneNumber() != null && !user.getPhoneNumber().isEmpty()) {
                 // Validar el número de teléfono
@@ -56,7 +63,7 @@
                 user.setPhoneNumber("");
             }
 
-            // Si el correo electrónico no está registrado, guarda el usuario en la base de datos
+            // Si todas las validaciones pasan, guarda el usuario en la base de datos
             userService.saveUser(user);
             return "redirect:/list_users";
         }

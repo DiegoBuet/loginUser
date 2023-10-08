@@ -33,7 +33,7 @@
       <th>Nombre</th>
       <th>Apellido</th>
       <th>Email</th>
-      <th>Contraseña</th>
+ <!--     <th>Contraseña</th>-->
       <th>Número Teléfono</th>
     </tr>
     </thead>
@@ -43,7 +43,7 @@
       <td th:text="${user.lastName}"></td>
       <td th:text="${user.email}"></td>
       <td th:text="${user.phoneNumber}"></td>
-      <td th:text="${user.password}"></td>
+      <!--<td th:text="${user.password}"></td>-->
       <td>
         <a th:href="@{/list_users/edit/{id}(id=${user.id})}" class="btn btn-warning">Edit</a>
         <a th:href="@{/list_users/{id}(id=${user.id})}" class="btn btn-danger">Delete</a>

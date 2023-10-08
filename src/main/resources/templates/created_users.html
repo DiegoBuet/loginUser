@@ -57,7 +57,7 @@
                     <div class="form-group">
                         <label>Contraseña:</label>
                         <input type="password" name="password" th:field="*{password}" class="form-control" placeholder="******" required>
-
+                        <span th:if="${invalidPasswordError}" class="error">La contraseña debe tener al menos una letra y un número, con una longitud mínima de 4 caracteres</span>
                     </div>
                     <div id="result" class="text-right"></div>
                     <br>
