@@ -38,6 +38,7 @@
                         <input type="email" class="form-control" id="email" name="email" th:field="*{email}" required>
                         <span th:if="${#fields.hasErrors('email')}" th:errors="*{email}" class="error"></span>
                         <span th:if="${emailError}" class="error">El correo electrónico ya está registrado.</span>
+                        <span th:if="${invalidEmailError}" class="error">El correo ingresado debe contener @ y .</span>
                     </div>
                     <br>
                     <br>

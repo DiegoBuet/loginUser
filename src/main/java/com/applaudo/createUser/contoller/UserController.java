@@ -36,6 +36,11 @@
                model.addAttribute("emailError", true);
                 return "created_users"; // Vuelve al formulario de creación con un mensaje de error
             }
+            if (!isValidEmail(user.getEmail())) {
+                model.addAttribute("invalidEmailError", true);
+                return "created_users"; // Regresar a la vista de creación con un mensaje de error
+            }
+
 
             // Si el correo electrónico no está registrado, guarda el usuario en la base de datos
             userService.saveUser(user);
