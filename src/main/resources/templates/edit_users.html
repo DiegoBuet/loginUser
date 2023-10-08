@@ -41,15 +41,15 @@
                     <br>
                     <br>
                     <div class="form-group">
-                        <label>Número de teléfono :</label>
+                        <label>Número de teléfono:</label>
                         <input type="text" name="phoneNumber" th:field="*{phoneNumber}" class="form-control" placeholder="Cantidad del producto: " required>
                     </div>
                     <br>
                     <br>
                     <div class="form-group">
                         <label>Contraseña:</label>
-                        <input type="password" name="password" th:field="*{password}" class="form-control" placeholder="******" >
-                        <span class="error-message">Product code is not allowed.</span>
+                        <input type="password" name="password" th:field="*{password}" class="form-control" placeholder="******">
+                        <span th:if="${passwordError}" class="error">La contraseña proporcionada es incorrecta.</span>
                     </div>
                     <div id="result" class="text-right"></div>
                     <br>

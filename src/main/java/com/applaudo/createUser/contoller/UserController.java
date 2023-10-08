@@ -40,8 +40,6 @@
                 model.addAttribute("invalidEmailError", true);
                 return "created_users"; // Regresar a la vista de creación con un mensaje de error
             }
-
-
             // Si el correo electrónico no está registrado, guarda el usuario en la base de datos
             userService.saveUser(user);
             return "redirect:/list_users";
@@ -50,11 +48,17 @@
 
 
         @PostMapping("/list_users/{id}")
-        public String updateUser(@PathVariable Long id, @ModelAttribute("user") User user, Model model) {
+        public String updateUser(@PathVariable Long id,@RequestParam("password") String password, @ModelAttribute("user") User user, Model model) {
             User currentUser = userService.findUserById(id);
+            String currentEmail = currentUser.getEmail();
+            // Verificar si la contraseña proporcionada coincide con la contraseña almacenada
+            if (!password.equals(currentUser.getPassword())) {
+                model.addAttribute("passwordError", true);
+                return "edit_users"; // Redirigir a la página de edición con un mensaje de error
+            }
             currentUser.setFirsName(user.getFirsName());
             currentUser.setLastName(user.getLastName());
-            currentUser.setEmail(user.getEmail());
+            currentUser.setEmail(currentEmail);
             currentUser.setPhoneNumber(user.getPhoneNumber());
             currentUser.setPassword(user.getPassword());
             userService.updateUser(currentUser);
