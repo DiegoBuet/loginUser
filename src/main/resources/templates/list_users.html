@@ -35,11 +35,12 @@
       <th>Email</th>
  <!--     <th>Contraseña</th>-->
       <th>Número Teléfono</th>
+      <th>Acciones</th>
     </tr>
     </thead>
     <tbody>
     <tr th:each="user : ${list_users}">
-      <td th:text="${user.firsName}"></td>
+      <td th:text="${user.firstName}"></td>
       <td th:text="${user.lastName}"></td>
       <td th:text="${user.email}"></td>
       <td th:text="${user.phoneNumber}"></td>
@@ -51,6 +52,7 @@
     </tr>
     </tbody>
   </table>
+  <a href="/loginIndex" class="btn btn-primary">Ir a Inicio de Sesión</a>
 
 </div>
 </body>

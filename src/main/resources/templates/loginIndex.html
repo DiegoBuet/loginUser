@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="en">
+<html xmlns:th="http://www.thymeleaf.org" xmlns="http://www.w3.org/1999/html">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Applaudo</title>
+     <link rel="stylesheet" type="text/css" th:href="@{static/css/style.css}" href="/templates/img/style.css" />
+
+<!--    <style>
+      body {
+  margin: 0;
+  padding: 0;
+  font-family: Arial, sans-serif;
+  overflow-x: hidden;
+  &#45;&#45;tw-bg-opacity: 1;
+  background-color: rgba(37, 37, 37, var(&#45;&#45;tw-bg-opacity));
+}
+
+#navbar {
+  width: 100%;
+  display: inline-flex;
+  padding-left: 3rem;
+  padding-right: 3rem;
+  -webkit-box-align: center;
+  align-items: center;
+  &#45;&#45;tw-bg-opacity: 1;
+  &#45;&#45;tw-text-opacity: 1;
+  background-color: rgba(37, 37, 37, var(&#45;&#45;tw-bg-opacity));
+  color: rgba(255, 255, 255, var(&#45;&#45;tw-text-opacity));
+  overflow: hidden;
+  -webkit-box-pack: justify;
+  height: 68px;
+}
+.nav-options {
+  justify-self: start;
+}
+
+#navbar a {
+  float: left;
+  display: block;
+  &#45;&#45;tw-text-opacity: 1;
+  color: rgba(255, 255, 255, var(&#45;&#45;tw-text-opacity));
+  text-align: center;
+  padding: 14px 16px;
+  text-decoration: none;
+}
+
+/* #navbar a:hover {
+  background-color: #ddd;
+  color: black;
+} */
+
+#navbar .logo {
+  float: left;
+}
+
+#navbar .get-in-touch {
+  margin-top: 20px;
+  margin-left: 350px;
+  margin-right: 20px;
+}
+button {
+  cursor: pointer;
+}
+
+.get-in-touch {
+  margin-right: 10rem;
+  min-width: 130px;
+  height: 40px;
+  color: #fff;
+  padding: 5px 10px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  position: relative;
+  display: inline-block;
+  outline: none;
+  border-radius: 20px;
+  border: 2px solid rgb(255, 64, 64);
+  background: rgb(255, 64, 64);
+}
+.get-in-touch:hover {
+  background: rgba(255, 64, 64, 0.7);
+  border: 2px solid rgba(255, 64, 64, 0.7);
+}
+
+#navbar a:hover {
+  color: grey; /* Cambiar a un gris más oscuro */
+  /* border-bottom: 2px solid #fff; */ /* Agregar un subrayado en hover */
+  float: left;
+  display: block;
+  text-align: center;
+  padding: 14px 16px;
+  text-decoration: none;
+  position: relative;
+  overflow: hidden;
+  transition: color 0.3s;
+}
+
+#navbar a::before {
+  content: "";
+  position: absolute;
+  left: 50%; /* Centrar el inicio del subrayado */
+  bottom: 0;
+  width: 0; /* Inicialmente, el subrayado tiene ancho 0 */
+  height: 2px; /* Grosor del subrayado */
+  background-color: #fff; /* Color del subrayado */
+  transition: width 0.6s ease-in-out; /* Transición del ancho */
+  transform: translateX(-50%); /* Centrar el subrayado */
+}
+#navbar a:hover::before {
+  width: 80%; /* Expandir el subrayado al 100% en hover */
+}
+
+.card {
+  margin: 0 auto;
+  margin-top: 5rem;
+  width: 60rem;
+  height: 20rem;
+  display: flex;
+  background-color: white;
+  border-radius: 50px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Sombra ligera */
+  background-color: rgba(37, 37, 37, 0.5);
+}
+
+.card-text {
+  flex: 1;
+  padding: 20px;
+}
+
+.card-text p {
+  /*  height: 20rem;
+  margin: 0;
+  font-size: 1rem; */
+}
+
+.card-image {
+  height: 20rem;
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.card-image img {
+  max-width: 100%;
+  max-height: 100%;
+  border-radius: 20px;
+}
+
+.buttonBox {
+  text-align: center;
+  align-self: start;
+}
+
+.container {
+  text-align: center;
+}
+
+    </style
+    ><style>
+    </style>-->
+  </head>
+  <body>
+    <div id="navbar">
+      <!-- Logo (Reemplaza 'logo.png' con la URL de tu logo) -->
+      <div class="logo-applaudo">
+        <img src="/templates/img/logo.jpeg" alt="Logo" class="logo" />
+      </div>
+
+      <!-- Opciones de navegación -->
+      <div class="nav-options">
+        <a href="#">Solutions</a>
+        <a href="#">Industries</a>
+        <a href="#">Insights</a>
+        <a href="#">About</a>
+        <a href="#">Careers</a>
+      </div>
+
+      <!-- Botón "Get in touch" -->
+      <div id="fourth" class="buttonBox">
+        <button href="#" class="get-in-touch btn10">Get in touch</button>
+        <div class="border"></div>
+        <div class="border"></div>
+        <div class="border"></div>
+        <div class="border"></div>
+      </div>
+    </div>
+    <div class="container">
+      <div class="card">
+        <div class="card-text">
+          <p>Get in touch</p>
+          <p>Before we start, we would like to better understand your needs.</p>
+        </div>
+        <div class="card-image">
+          <img src="/templates/img/card.jpg" alt="Imagen" />
+        </div>
+      </div>
+    </div>
+  </body>
+</html>

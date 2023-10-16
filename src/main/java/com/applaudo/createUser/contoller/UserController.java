@@ -5,6 +5,8 @@
     import com.applaudo.createUser.service.UserService;
     import org.springframework.beans.factory.annotation.Autowired;
 
+    import org.springframework.http.HttpStatus;
+    import org.springframework.http.ResponseEntity;
     import org.springframework.stereotype.Controller;
     import org.springframework.ui.Model;
     import org.springframework.web.bind.annotation.*;
@@ -20,124 +22,128 @@
         @Autowired
         private UserService userService;
 
-
-        @GetMapping("/list_users/new")
-        public String showUserRegistrationForm(Model model){
+        @GetMapping("/create")
+        public ResponseEntity<User> showUserRegistrationForm() {
             User user = new User();
-            model.addAttribute("user", user);
-            return "created_users"; // Redirects to the purchase list page
+            return ResponseEntity.ok(user);
         }
-
-        @PostMapping("/list_users")
-        public String saveUser(@ModelAttribute("user") User user, Model model) {
+        @PostMapping("/create")
+        public ResponseEntity<String> saveUser(@RequestBody User user) {
             // Verificar si el correo electrónico ya está registrado
             User existingUser = userService.findUserByEmail(user.getEmail());
             if (existingUser != null) {
-                model.addAttribute("emailError", true);
-                return "created_users"; // Vuelve al formulario de creación con un mensaje de error
-            }
-            if (!isValidEmail(user.getEmail())) {
-                model.addAttribute("invalidEmailError", true);
-                return "created_users"; // Regresar a la vista de creación con un mensaje de error
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Email already registered");
             }
 
             // Validar la contraseña
-            String password = user.getPassword();
-            if (!isValidPassword(password)) {
-                model.addAttribute("invalidPasswordError", true);
-                return "created_users"; // Regresar a la vista de creación con un mensaje de error
+            if (!isValidPassword(user.getPassword(), user.getPassword())) {
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Invalid password");
             }
 
-            // Verificar si el número de teléfono está vacío
-            if (user.getPhoneNumber() != null && !user.getPhoneNumber().isEmpty()) {
-                // Validar el número de teléfono
-                if (!isValidPhoneNumber(user.getPhoneNumber())) {
-                    model.addAttribute("invalidPhoneNumberError", true);
-                    return "created_users"; // Regresar a la vista de creación con un mensaje de error
+            // Validar y formatear el número de teléfono
+            String phoneNumber = user.getPhoneNumber();
+            if (phoneNumber != null && !phoneNumber.isEmpty()) {
+                if (!isValidPhoneNumber(phoneNumber)) {
+                    return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Invalid phone number");
                 }
-                // Transformar el número de teléfono antes de guardarlo
-                String formattedPhoneNumber = formatPhoneNumber(user.getPhoneNumber());
+                // Formatear el número de teléfono antes de guardarlo
+                String formattedPhoneNumber = formatPhoneNumber(phoneNumber);
                 user.setPhoneNumber(formattedPhoneNumber);
             } else {
                 // El número de teléfono está vacío, no aplicamos el formato
                 user.setPhoneNumber("");
             }
-
             // Si todas las validaciones pasan, guarda el usuario en la base de datos
             userService.saveUser(user);
-            return "redirect:/list_users";
+            return ResponseEntity.ok("User created successfully");
         }
 
-
-
-        @PostMapping("/list_users/{id}")
-        public String updateUser(
+    /*    @PostMapping("/update/{id}")
+        public ResponseEntity<String> updateUser(
                 @PathVariable Long id,
                 @RequestParam("password") String password,
-                @ModelAttribute("user") User user,
-                Model model
+                @RequestBody User updatedUser
         ) {
             User currentUser = userService.findUserById(id);
-            String currentEmail = currentUser.getEmail();
 
             // Verificar si la contraseña proporcionada coincide con la contraseña almacenada
-            if (!password.equals(currentUser.getPassword())) {
-                model.addAttribute("passwordError", true);
-                return "edit_users"; // Redirigir a la página de edición con un mensaje de error
+            if (!isValidPassword(password, currentUser.getPassword())) {
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Incorrect password");
             }
 
-            // Verificar si el número de teléfono está vacío
-            if (user.getPhoneNumber() != null && !user.getPhoneNumber().isEmpty()) {
-                // Validar el número de teléfono
-                if (!isValidPhoneNumber(user.getPhoneNumber())) {
-                    model.addAttribute("invalidPhoneNumberError", true);
-                    return "edit_users"; // Redirigir a la página de edición con un mensaje de error
-                }
-                // Transformar el número de teléfono antes de actualizarlo en la base de datos
-                String formattedPhoneNumber = formatPhoneNumber(user.getPhoneNumber());
-                currentUser.setPhoneNumber(formattedPhoneNumber);
+            // Verificar y actualizar el número de teléfono
+            String updatedPhoneNumber = updatedUser.getPhoneNumber();
+            if (isValidPhoneNumber(updatedPhoneNumber)) {
+                currentUser.setPhoneNumber(updatedPhoneNumber);
             } else {
-                // El número de teléfono está vacío, no aplicamos el formato
                 currentUser.setPhoneNumber("");
             }
 
-            currentUser.setFirsName(user.getFirsName());
-            currentUser.setLastName(user.getLastName());
-            currentUser.setEmail(currentEmail);
-            currentUser.setPassword(user.getPassword());
+            // Actualizar otros campos del usuario
+            currentUser.setFirstName(updatedUser.getFirstName());
+            currentUser.setLastName(updatedUser.getLastName());
+            currentUser.setPassword(updatedUser.getPassword());
 
             userService.updateUser(currentUser);
 
-            return "redirect:/list_users";
+            return ResponseEntity.ok("User with ID " + id + " has been updated");
+        }*/
+
+        @PostMapping("/update/{id}")
+        public ResponseEntity<String> updateUser(
+                @PathVariable Long id,
+                @RequestBody User updatedUser
+        ) {
+            User currentUser = userService.findUserById(id);
+
+            // Verificar si el correo electrónico está siendo modificado
+            if (!currentUser.getEmail().equals(updatedUser.getEmail())) {
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Email cannot be modified");
+            }
+
+            // Verificar y actualizar el número de teléfono
+            String updatedPhoneNumber = updatedUser.getPhoneNumber();
+            if (isValidPhoneNumber(updatedPhoneNumber)) {
+                currentUser.setPhoneNumber(updatedPhoneNumber);
+            }
+
+            // Actualizar otros campos del usuario
+            currentUser.setFirstName(updatedUser.getFirstName());
+            currentUser.setLastName(updatedUser.getLastName());
+
+            userService.updateUser(currentUser);
+
+            return ResponseEntity.ok("User with ID " + id + " has been updated");
         }
 
 
 
-        @GetMapping({"/list_users/{id}"})
-        public String deleteUser(@PathVariable Long id){
+
+        @DeleteMapping("/{id}")
+        public ResponseEntity<String> deleteUser(@PathVariable Long id) {
             userService.deleteUser(id);
-            return "redirect:/list_users"; // Redirects to the purchase list page
+            return ResponseEntity.ok("User with ID " + id + " has been deleted");
         }
 
-        @GetMapping({"/list_users/edit/{id}"})
-        public String showEditForm(@PathVariable Long id, Model model){
+        @GetMapping("/edit/{id}")
+        public ResponseEntity<User> showEditForm(@PathVariable Long id) {
             User user = userService.findUserById(id);
+            if (user == null) {
+                return ResponseEntity.notFound().build();
+            }
             // Eliminar el prefijo "+503" del número de teléfono para mostrarlo en el formulario de edición
             String phoneNumberWithoutPrefix = extractLast8Digits(user.getPhoneNumber());
             user.setPhoneNumber(phoneNumberWithoutPrefix);
-            model.addAttribute("user", userService.findUserById(id));
-            return "edit_users";
+            return ResponseEntity.ok(user);
         }
-
-
-        @GetMapping({"/list_users","/"})
-        public String listUsers(Model model){
+        @GetMapping("/list")
+        public ResponseEntity<List<User>> listUsers() {
             List<User> userList = userService.listUsers();
-           // model.addAttribute("user", userList);
-            model.addAttribute("list_users", userList);
-            return "list_users";
+            if (userList.isEmpty()) {
+                return ResponseEntity.noContent().build();
+            }
+            return ResponseEntity.ok(userList);
         }
-
         // Método para validar el formato del correo electrónico en el lado del servidor
         private boolean isValidEmail(String email) {
             // Expresión regular para validar el correo electrónico
@@ -146,21 +152,11 @@
             Matcher matcher = pattern.matcher(email);
             return matcher.matches();
         }
-        // Método para validar el formato del número de teléfono en el lado del servidor
-        private boolean isValidPhoneNumber(String phoneNumber) {
-            // Expresión regular para validar el número de teléfono (8 dígitos)
-            String phoneRegex = "\\d{8}";
-            Pattern pattern = Pattern.compile(phoneRegex);
-            Matcher matcher = pattern.matcher(phoneNumber);
-            return matcher.matches();
-        }
-
         @ExceptionHandler(InvalidEmailFormatException.class)
         public String handleInvalidEmailFormat(Model model) {
             model.addAttribute("emailError", true);
             return "create_users"; // Redirigir de vuelta al formulario de creación con un mensaje de error
         }
-
         private String formatPhoneNumber(String phoneNumber) {
             if (phoneNumber != null && !phoneNumber.isEmpty()) {
                 return "+503 " + phoneNumber;
@@ -178,9 +174,15 @@
         }
 
         // Método para validar la contraseña
-        private boolean isValidPassword(String password) {
-            // La contraseña debe tener al menos una letra y un número, con una longitud mínima de 4 caracteres
-            return password != null && password.matches("^(?=.*[A-Za-z])(?=.*\\d).{4,}$");
+        private boolean isValidPassword(String password, String storedPassword) {
+            // Verificar si la contraseña proporcionada coincide con la contraseña almacenada
+            return storedPassword.equals(password);
+        }
+
+        private boolean isValidPhoneNumber(String phoneNumber) {
+            // Validar el formato del número de teléfono (8 dígitos)
+            String phoneRegex = "\\d{8}";
+            return phoneNumber == null || phoneNumber.isEmpty() || phoneNumber.matches(phoneRegex);
         }
 
     }
