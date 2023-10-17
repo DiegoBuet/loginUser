@@ -1,16 +1,16 @@
 package com.applaudo.createUser.model.entity;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-import lombok.NonNull;
+import lombok.*;
 import jakarta.persistence.Id;
 
 
 
 @Data
 @Entity
+@AllArgsConstructor
+@NoArgsConstructor
+@Builder
 @Table(name = "list_users")
 public class User {
     @Id
@@ -29,3 +29,4 @@ public class User {
     @Column(name = "password", nullable = false,  length = 50)
     private String password;
 }
+

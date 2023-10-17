@@ -1,11 +1,13 @@
 package com.applaudo.createUser.contoller;
 
 import com.applaudo.createUser.model.entity.User;
+import com.applaudo.createUser.repository.UserRepository;
 import com.applaudo.createUser.service.UserService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestTemplate;
+import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
@@ -13,26 +15,24 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.boot.test.web.client.TestRestTemplate;
-import org.springframework.boot.test.web.server.LocalServerPort;
-import org.springframework.boot.web.client.RestTemplateBuilder;
-import org.springframework.core.ParameterizedTypeReference;
-import org.springframework.http.HttpMethod;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
-import org.springframework.web.client.RestTemplate;
 
-import java.lang.reflect.Array;
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.*;
+
 import static org.mockito.Mockito.when;
+
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.mockito.Mockito.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.ArgumentMatchers.any;
+
 
 @WebMvcTest(UserController.class)
 public class UserControllerTest {
@@ -44,8 +44,29 @@ public class UserControllerTest {
     @MockBean
     private UserService userService;
 
+    @InjectMocks
+    private UserController userController;
+  /*  @Mock
+    private UserService userService;*/
+
     @Autowired
     private ObjectMapper objectMapper;
+
+
+    @MockBean
+    private UserRepository userRepository;
+
+/*    @InjectMocks
+    private UserController userController;*/
+
+
+    @BeforeEach
+    public void setUp() {
+        MockitoAnnotations.initMocks(this);
+    }
+
+
+
 
     @Test
     public void testListUsers() throws Exception {
@@ -64,7 +85,7 @@ public class UserControllerTest {
         // Realiza una solicitud GET al endpoint /list
         mockMvc.perform(MockMvcRequestBuilders.get("/list")
                         .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(MockMvcResultMatchers.status().isOk())
+                .andExpect(status().isOk())
                 .andExpect(MockMvcResultMatchers.content().contentType(MediaType.APPLICATION_JSON))
                 .andExpect(MockMvcResultMatchers.jsonPath("$[0].id").value(1))
                 .andExpect(MockMvcResultMatchers.jsonPath("$[0].firstName").value("John"))
@@ -74,84 +95,70 @@ public class UserControllerTest {
                 .andExpect(MockMvcResultMatchers.jsonPath("$[0].password").value("password123"));
     }
 
+/*
+    @Test
+    public void testSaveUser_ValidUser() throws Exception {
+        // Crear un usuario válido
+        User user = new User();
+        user.setFirstName("John");
+        user.setLastName("Doe");
+        user.setEmail("john.doe@example.com");
+        user.setPhoneNumber("12345678");
+        user.setPassword("securePassword");
+
+        // Configura el comportamiento del servicio mock
+        when(userService.findUserByEmail(user.getEmail())).thenReturn(null); // Usuario no existente
+
+        // Realiza una solicitud POST al endpoint /create con el usuario válido
+        mockMvc.perform(post("/create")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(user)))
+                .andExpect(status().isOk())
+                .andExpect(content().string("User created successfully"));
+
+        // Verifica que el servicio haya guardado el usuario
+        verify(userService, times(1)).saveUser(user);
+    }
+
+    @Test
+    public void testSaveUser_UserWithEmailExists() throws Exception {
+        // Crear un usuario con correo electrónico existente
+        User user = new User();
+        user.setEmail("john.doe@example.com");
+
+        // Configura el comportamiento del servicio mock para un usuario existente
+        when(userService.findUserByEmail(user.getEmail())).thenReturn(user);
+
+        // Realiza una solicitud POST al endpoint /create con el usuario existente
+        mockMvc.perform(post("/create")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(user)))
+                .andExpect(status().isBadRequest())
+                .andExpect(content().string("Email already registered"));
+
+        // Verifica que el servicio no haya guardado el usuario
+        verify(userService, never()).saveUser(user);
+    }*/
+/*        @Test
+        public void testSaveUser_ValidUser() {
+            User user = new User();
+            when(userService.findUserByEmail(any())).thenReturn(null);
+            when(userService.saveUser(any(User.class)).thenReturn(user);
+
+            ResponseEntity<String> response = userController.saveUser(user);
+
+            assertEquals(HttpStatus.OK, response.getStatusCode());
+            assertEquals("User created successfully", response.getBody());
+        }*/
 
 /*    @Test
-    void listUsers() {
-        ResponseEntity<List> response = testRestTemplate.getForEntity("/list", List.class);
+    public void testSaveUser_DuplicateEmail() {
+        User user = new User();
+        when(userService.findUserByEmail(any())).thenReturn(user);
 
-        assertEquals(HttpStatus.OK, response.getStatusCode());
-        assertEquals(200, response.getStatusCodeValue());
-        List<User> users = response.getBody();
+        ResponseEntity<String> response = userController.saveUser(user);
 
-        assertEquals(1, users.size());
-
-        User user = users.get(0);
-        assertEquals("John", user.getFirstName());
-        assertEquals("Doe", user.getLastName());
-    }*/
-
-
-/*
-    private TestRestTemplate testRestTemplate;
-
-    @Autowired
-    private RestTemplateBuilder restTemplateBuilder;
-
-    @LocalServerPort
-    private int port;
-
-
-    @BeforeEach
-    void setUp() {
-  *//*      restTemplateBuilder = restTemplateBuilder.rootUri("http://localhost:" + port);
-        testRestTemplate = new TestRestTemplate(restTemplateBuilder);*//*
-    }
-    @Test
-    void showUserRegistrationForm() {
-    }
-
-    @Test
-    void saveUser() {
-    }
-
-*//*    @Test
-    void listUsers() {
-        ResponseEntity<User[]> response = testRestTemplate.getForEntity("/list", User[].class);
-
-        assertEquals(HttpStatus.OK, response.getStatusCode());
-        assertEquals(200, response.getStatusCodeValue());
-        List<User> users = Arrays.asList(response.getBody());
-
-        System.out.println(users.size());
-    }*//*
-
-*//*    @Test
-    void listUsers() {
-        ResponseEntity<List<User>> response = testRestTemplate.getForEntity("/api/users/list", List.class);
-
-        assertEquals(HttpStatus.OK, response.getStatusCode());
-        assertEquals(200, response.getStatusCodeValue());
-        List<User> users = response.getBody();
-
-        System.out.println(users.size());
-    }*//*
-
-    @Test
-    void listUsers() {
-*//*        ResponseEntity<List<User>> response = testRestTemplate.exchange(
-                "/api/users/list",
-                HttpMethod.GET,
-                null,
-                new ParameterizedTypeReference<List<User>>() {
-                });
-
-        assertEquals(HttpStatus.OK, response.getStatusCode());
-        List<User> users = response.getBody();
-
-        System.out.println(users.size());*//*
-    }
-
-    @Test
-    void testListUsers() {
+        assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
+        assertEquals("Email already registered", response.getBody());
     }*/
 }
