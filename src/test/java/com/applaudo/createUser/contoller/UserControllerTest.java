@@ -10,6 +10,9 @@ import org.junit.jupiter.api.TestTemplate;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
+
+
+import static org.mockito.Mockito.*;
 import org.mockito.MockitoAnnotations;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
@@ -23,15 +26,26 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
+import java.util.Arrays;
 import java.util.List;
+import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
 
 import static org.mockito.Mockito.when;
 
+import static org.springframework.test.web.client.match.MockRestRequestMatchers.content;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-import static org.mockito.Mockito.*;
+
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
+
+import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.MediaType;
+import org.springframework.test.web.servlet.MockMvc;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 
 @WebMvcTest(UserController.class)
@@ -46,8 +60,6 @@ public class UserControllerTest {
 
     @InjectMocks
     private UserController userController;
-  /*  @Mock
-    private UserService userService;*/
 
     @Autowired
     private ObjectMapper objectMapper;
@@ -56,14 +68,63 @@ public class UserControllerTest {
     @MockBean
     private UserRepository userRepository;
 
-/*    @InjectMocks
-    private UserController userController;*/
+    private User user;
+
+
 
 
     @BeforeEach
     public void setUp() {
-        MockitoAnnotations.initMocks(this);
+        user = User.builder()
+                .id(1L)
+                .firstName("Paco")
+                .lastName("Ravana")
+                .email("Paco@ravana.com")
+                .phoneNumber("45686548")
+                .password("q111")
+                .build();
+
     }
+
+    @Test
+    public void saveUser() throws Exception {
+        User postUser = User.builder()
+                .id(1L)
+                .firstName("Paco")
+                .lastName("Ravana")
+                .email("Paco@ravana.com")
+                .phoneNumber("45686548")
+                .password("q111")
+                .build();
+
+        Mockito.when(userService.saveUser(postUser)).thenReturn(user);
+        mockMvc.perform(post("/create").contentType(MediaType.APPLICATION_JSON)
+                .content("{\n"+
+                        "     \"firstName\":\"Paco\", \n" +
+                        "     \"lastName\":\"Ravana\", \n" +
+                        "     \"email\":\"Paco@ravana.com\",\n" +
+                        "     \"phoneNumber\":\"45686548\",\n" +
+                        "     \"password\":\"q111\" \n" +
+                        "}"   ))
+                .andExpect(status().isOk());
+    }
+
+
+    @Test
+    public void testShowEditForm() throws Exception {
+
+        // Configura el comportamiento del servicio para retornar el usuario simulado
+        Mockito.when(userService.findUserById(4L)).thenReturn(user);
+
+        // Realiza una solicitud GET a /edit/1 y verifica que la respuesta sea un estado HTTP 200 OK
+        mockMvc.perform(get("/edit/4"))  // Usa {id} en lugar de 1 directamente
+                .andExpect(status().isOk());
+    }
+
+
+
+
+
 
 
 

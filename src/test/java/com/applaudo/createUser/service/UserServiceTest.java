@@ -20,11 +20,7 @@ import static org.mockito.Mockito.when;
 
 @SpringBootTest
 class UserServiceTest {
-/*    @Autowired
-    private UserService userService;
 
-    @MockBean
-    private UserRepository userRepository;*/
 
     @InjectMocks
     private UserServiceImpl userService;

@@ -58,36 +58,6 @@
             return ResponseEntity.ok("User created successfully");
         }
 
-    /*    @PostMapping("/update/{id}")
-        public ResponseEntity<String> updateUser(
-                @PathVariable Long id,
-                @RequestParam("password") String password,
-                @RequestBody User updatedUser
-        ) {
-            User currentUser = userService.findUserById(id);
-
-            // Verificar si la contraseña proporcionada coincide con la contraseña almacenada
-            if (!isValidPassword(password, currentUser.getPassword())) {
-                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Incorrect password");
-            }
-
-            // Verificar y actualizar el número de teléfono
-            String updatedPhoneNumber = updatedUser.getPhoneNumber();
-            if (isValidPhoneNumber(updatedPhoneNumber)) {
-                currentUser.setPhoneNumber(updatedPhoneNumber);
-            } else {
-                currentUser.setPhoneNumber("");
-            }
-
-            // Actualizar otros campos del usuario
-            currentUser.setFirstName(updatedUser.getFirstName());
-            currentUser.setLastName(updatedUser.getLastName());
-            currentUser.setPassword(updatedUser.getPassword());
-
-            userService.updateUser(currentUser);
-
-            return ResponseEntity.ok("User with ID " + id + " has been updated");
-        }*/
 
         @PostMapping("/update/{id}")
         public ResponseEntity<String> updateUser(
@@ -115,9 +85,6 @@
 
             return ResponseEntity.ok("User with ID " + id + " has been updated");
         }
-
-
-
 
         @DeleteMapping("/{id}")
         public ResponseEntity<String> deleteUser(@PathVariable Long id) {

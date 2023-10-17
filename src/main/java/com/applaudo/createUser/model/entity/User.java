@@ -1,5 +1,7 @@
 package com.applaudo.createUser.model.entity;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
 import lombok.*;
 import jakarta.persistence.Id;
@@ -28,5 +30,18 @@ public class User {
     private String phoneNumber;
     @Column(name = "password", nullable = false,  length = 50)
     private String password;
+
+/*    @JsonCreator
+    public User(@JsonProperty("firstName") String firstName,
+                @JsonProperty("lastName") String lastName,
+                @JsonProperty("email") String email,
+                @JsonProperty("phoneNumber") String phoneNumber,
+                @JsonProperty("password") String password) {
+        this.firstName = firstName;
+        this.lastName = lastName;
+        this.email = email;
+        this.phoneNumber = phoneNumber;
+        this.password = password;
+    }*/
 }
 
