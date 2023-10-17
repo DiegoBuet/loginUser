@@ -6,21 +6,15 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.Mockito;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
-
 import java.util.Arrays;
 import java.util.List;
-
+import java.util.Optional;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.when;
 
 @SpringBootTest
 class UserServiceTest {
-
 
     @InjectMocks
     private UserServiceImpl userService;
@@ -30,111 +24,77 @@ class UserServiceTest {
 
     @BeforeEach
     void setUp() {
-        User user1 = User.builder()
-                .id(1L)
-                .firstName("Paco")
-                .lastName("Ravana")
-                .email("Paco@ravana.com")
-                .phoneNumber("45686548")
-                .password("q111")
-                .build();
-
-        User user2 = User.builder()
-                .id(2L)
-                .firstName("Geronimo")
-                .lastName("Gutierrez")
-                .email("geronimo@gutierrez.com")
-                .phoneNumber("12345678")
-                .password("q123")
-                .build();
-
-        User user3 = User.builder()
-                .id(3L)
-                .firstName("Veronica")
-                .lastName("Altamirano")
-                .email("veronica@altamirano.com")
-                .phoneNumber("98765432")
-                .password("q111")
-                .build();
-        List<User> userList = Arrays.asList(user1, user2, user3);
+        List<User> userList = Arrays.asList(
+                new User(1L, "Paco", "Ravana", "Paco@ravana.com", "45686548", "q111"),
+                new User(2L, "Geronimo", "Gutierrez", "geronimo@gutierrez.com", "12345678", "q123"),
+                new User(3L, "Veronica", "Altamirano", "veronica@altamirano.com", "98765432", "q111")
+        );
 
         when(userRepository.findAll()).thenReturn(userList);
+        when(userRepository.findById(1L)).thenReturn(Optional.of(userList.get(0)));
+        when(userRepository.findByEmail("john.doe@example.com")).thenReturn(userList.get(1));
+        when(userRepository.findByEmail("nonexistent@example.com")).thenReturn(null);
     }
 
     @Test
-    public void testListUsers() {
-        // Llama al método listUsers del servicio
+    void testListUsers() {
         List<User> users = userService.listUsers();
-
-        // Verifica que la lista de usuarios no esté vacía
-        assertEquals(3, users.size()); // Debe haber 3 usuarios en la lista
+        assertEquals(3, users.size());
     }
-    @Test
-    public void testSaveUser() {
-        User userToSave = User.builder()
-                .firstName("John")
-                .lastName("Doe")
-                .email("john.doe@example.com")
-                .phoneNumber("12345678")
-                .password("test123")
-                .build();
 
+    @Test
+    void testSaveUser() {
+        User userToSave = new User(null, "Jonatan", "Gonzales", "jonatan@gonzales.com", "12345678", "q123");
         when(userRepository.save(userToSave)).thenReturn(userToSave);
         User savedUser = userService.saveUser(userToSave);
         assertNotNull(savedUser);
-        assertEquals("John", savedUser.getFirstName());
-        assertEquals("Doe", savedUser.getLastName());
-        assertEquals("john.doe@example.com", savedUser.getEmail());
-
+        assertEquals("Jonatan", savedUser.getFirstName());
+        assertEquals("Gonzales", savedUser.getLastName());
+        assertEquals("jonatan@gonzales.com", savedUser.getEmail());
     }
 
     @Test
-    public void testUpdateUser() {
-        // Crea un usuario existente en la configuración de tu prueba
-        User userToUpdate = User.builder()
-                .id(1L) // Establece el ID del usuario que deseas actualizar
-                .firstName("UpdatedFirstName")
-                .lastName("UpdatedLastName")
-                .email("updated.email@example.com")
-                .phoneNumber("12345678")
-                .password("newPassword")
-                .build();
-
+    void testUpdateUser() {
+        User userToUpdate = new User(1L, "Dani", "Lo", "Dani@Lo.com", "12345678", "q123");
         when(userRepository.save(userToUpdate)).thenReturn(userToUpdate);
-
         User updatedUser = userService.updateUser(userToUpdate);
-
         assertNotNull(updatedUser);
-        assertEquals(userToUpdate.getId(), updatedUser.getId()); // Asegúrate de que el ID no cambie
-        assertEquals("UpdatedFirstName", updatedUser.getFirstName()); // Asegúrate de que otros campos se actualicen correctamente
-        assertEquals("UpdatedLastName", updatedUser.getLastName());
-        assertEquals("updated.email@example.com", updatedUser.getEmail());
-        // Agrega más aserciones según tus requisitos
+        assertEquals(userToUpdate.getId(), updatedUser.getId());
+        assertEquals("Dani", updatedUser.getFirstName());
+        assertEquals("Lo", updatedUser.getLastName());
+        assertEquals("Dani@Lo.com", updatedUser.getEmail());
     }
 
     @Test
-    public void testFindUserById() {
-        // Obtén un ID de usuario existente en tu configuración
-        Long userIdToFind = 1L; // El ID del usuario que deseas encontrar
-        User userToFind = User.builder()
-                .id(userIdToFind)
-                .firstName("FoundFirstName")
-                .lastName("FoundLastName")
-                .email("found.email@example.com")
-                .phoneNumber("12345678")
-                .password("test123")
-                .build();
-
-        when(userRepository.findById(userIdToFind)).thenReturn(java.util.Optional.ofNullable(userToFind));
-
+    void testFindUserById() {
+        Long userIdToFind = 1L;
         User foundUser = userService.findUserById(userIdToFind);
-
         assertNotNull(foundUser);
         assertEquals(userIdToFind, foundUser.getId());
-        assertEquals("FoundFirstName", foundUser.getFirstName()); // Asegúrate de que otros campos se obtengan correctamente
-        assertEquals("FoundLastName", foundUser.getLastName());
-        assertEquals("found.email@example.com", foundUser.getEmail());
-
+        assertEquals("Paco", foundUser.getFirstName());
+        assertEquals("Ravana", foundUser.getLastName());
+        assertEquals("Paco@ravana.com", foundUser.getEmail());
     }
 
+    @Test
+    void testDeleteUser() {
+        Long userIdToDelete = 1L;
+        assertDoesNotThrow(() -> userService.deleteUser(userIdToDelete));
+    }
+
+    @Test
+    void testFindUserByEmail_UserExists() {
+        String emailToFind = "cocho@lopez.com";
+        User userToFind = new User(1L, "cocho", "lopez", emailToFind, "12345678", "q123");
+        when(userRepository.findByEmail(emailToFind)).thenReturn(userToFind);
+        User foundUser = userService.findUserByEmail(emailToFind);
+        assertNotNull(foundUser);
+        assertEquals(emailToFind, foundUser.getEmail());
+    }
+
+    @Test
+    void testFindUserByEmail_UserNotFound() {
+        String nonExistentEmail = "nonexistent@email.com";
+        assertNull(userService.findUserByEmail(nonExistentEmail));
+    }
 }

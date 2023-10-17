@@ -31,17 +31,6 @@ public class User {
     @Column(name = "password", nullable = false,  length = 50)
     private String password;
 
-/*    @JsonCreator
-    public User(@JsonProperty("firstName") String firstName,
-                @JsonProperty("lastName") String lastName,
-                @JsonProperty("email") String email,
-                @JsonProperty("phoneNumber") String phoneNumber,
-                @JsonProperty("password") String password) {
-        this.firstName = firstName;
-        this.lastName = lastName;
-        this.email = email;
-        this.phoneNumber = phoneNumber;
-        this.password = password;
-    }*/
+
 }
 
